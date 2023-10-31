@@ -1,0 +1,82 @@
+class ComplexNumber:
+    def __init__(self, real, imaginary):
+        self.real = real
+        self.imaginary = imaginary
+
+    def __str__(self):
+        return f"{self.real} + {self.imaginary}i"
+
+class Quaternion:
+    def __init__(self, real, i, j, k):
+        self.real = real
+        self.i = i
+        self.j = j
+        self.k = k
+
+    def __str__(self):
+        return f"{self.real} + {self.i}i + {self.j}j + {self.k}k"
+
+class Calculator:
+    def __init__(self):
+        self.stack = []
+
+    def push(self, value):
+        self.stack.append(value)
+
+    def pop(self):
+        if self.stack:
+            return self.stack.pop()
+        else:
+            print("Стэк пустой")
+            return None
+
+    def perform_operation(self, operator):
+        if len(self.stack) < 2:
+            print("Недостаточно операндов в стеке.")
+            return
+
+        b = self.pop()
+        a = self.pop()
+
+        if isinstance(a, ComplexNumber) and isinstance(b, ComplexNumber):
+            if operator == '+':
+                result = ComplexNumber(a.real + b.real, a.imaginary + b.imaginary)
+            elif operator == '-':
+                result = ComplexNumber(a.real - b.real, a.imaginary - b.imaginary)
+            elif operator == '*':
+                result = ComplexNumber(a.real * b.real - a.imaginary * b.imaginary, a.real * b.imaginary + a.imaginary * b.real)
+            elif operator == '/':
+                denominator = b.real**2 + b.imaginary**2
+                result = ComplexNumber((a.real * b.real + a.imaginary * b.imaginary) / denominator,
+                                       (a.imaginary * b.real - a.real * b.imaginary) / denominator)
+            else:
+                print("Неверный оператор")
+                return
+
+        elif isinstance(a, Quaternion) and isinstance(b, Quaternion):
+            if operator == '+':
+                result = Quaternion(a.real + b.real, a.i + b.i, a.j + b.j, a.k + b.k)
+            elif operator == '-':
+                result = Quaternion(a.real - b.real, a.i - b.i, a.j - b.j, a.k - b.k)
+            else:
+                print("Неверный оператор для кватернионов")
+                return
+
+        else:
+            print("Неверный тип операнда")
+            return
+
+        self.push(result)
+
+calc = Calculator()
+calc.push(ComplexNumber(2, 3))
+calc.push(ComplexNumber(1, 2))
+calc.perform_operation('+')
+result = calc.pop()
+print("Результат сложения комплексных чисел:", result)
+
+calc.push(Quaternion(1, 2, 3, 4))
+calc.push(Quaternion(2, 3, 4, 5))
+calc.perform_operation('+')
+result = calc.pop()
+print("Результат сложения кватернионов:", result)
